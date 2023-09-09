@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Editor from './components/Editor';
-import { loadFromBytebin } from './util/storage';
+import {load} from './util/storage';
 
 const INITIAL = Symbol();
 const LOADING = Symbol();
@@ -14,6 +14,7 @@ export default function App() {
   const [forcedContent, setForcedContent] = useState<string>('');
   const [actualContent, setActualContent] = useState<string>('');
   const [contentType, setContentType] = useState<string>();
+  const [store, setStore] = useState<'public' | 'private'>("public");
 
   function setContent(content: string) {
     setActualContent(content);
@@ -25,11 +26,14 @@ export default function App() {
       setState(LOADING);
       setContent('Loading...');
 
-      loadFromBytebin(pasteId).then(({ ok, content, type }) => {
+      load(pasteId).then(({ ok, content, type, store }) => {
         if (ok) {
           setContent(content);
           if (type) {
             setContentType(type);
+          }
+          if(store){
+            setStore(store);
           }
         } else {
           setContent(get404Message(pasteId));
@@ -46,6 +50,7 @@ export default function App() {
       setActualContent={setActualContent}
       contentType={contentType}
       pasteId={pasteId}
+      storeType={store}
     />
   );
 }

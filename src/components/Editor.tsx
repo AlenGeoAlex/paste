@@ -14,19 +14,22 @@ export interface EditorProps {
   setActualContent: (value: string) => void;
   contentType?: string;
   pasteId?: string;
+  storeType : 'public' | 'private'
 }
 
 export type ResetFunction = () => void;
 
 export default function Editor({
-  forcedContent,
-  actualContent,
-  setActualContent,
-  contentType,
-  pasteId,
+    forcedContent,
+    actualContent,
+    setActualContent,
+    contentType,
+    pasteId,
+    storeType
 }: EditorProps) {
   const [language, setLanguage] = useState<string>('plain');
   const [readOnly, setReadOnly] = useState<boolean>(isMobile && !!pasteId);
+  const [store, setStore] = useState<"private" | "public">('public');
   const resetFunction = useRef<ResetFunction>();
 
   const [theme, setTheme] = usePreference<keyof Themes>(
@@ -43,6 +46,9 @@ export default function Editor({
   useEffect(() => {
     if (contentType) {
       setLanguage(contentType);
+    }
+    if(storeType){
+      setStore(storeType);
     }
   }, [contentType]);
 
@@ -67,6 +73,8 @@ export default function Editor({
           theme={theme}
           setTheme={setTheme}
           zoom={zoom}
+          store={store}
+          setStore={setStore}
         />
         <EditorTextArea
           forcedContent={forcedContent}

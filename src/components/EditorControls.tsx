@@ -20,18 +20,22 @@ export interface EditorControlsProps {
   theme: keyof Themes;
   setTheme: (value: keyof Themes) => void;
   zoom: (delta: number) => void;
+  store : "private" | "public";
+  setStore: (value : "private" | "public") => void;
 }
 
 export default function EditorControls({
-  actualContent,
-  resetFunction,
-  language,
-  setLanguage,
-  readOnly,
-  setReadOnly,
-  theme,
-  setTheme,
-  zoom,
+    actualContent,
+    resetFunction,
+    language,
+    setLanguage,
+    readOnly,
+    setReadOnly,
+    theme,
+    setTheme,
+    setStore,
+    store,
+    zoom,
 }: EditorControlsProps) {
   const [saving, setSaving] = useState<boolean>(false);
   const [recentlySaved, setRecentlySaved] = useState<boolean>(false);
@@ -45,7 +49,7 @@ export default function EditorControls({
       return;
     }
     setSaving(true);
-    saveToBytebin(actualContent, language).then(pasteId => {
+    saveToBytebin(actualContent, language, store).then(pasteId => {
       setSaving(false);
       setRecentlySaved(true);
       if (pasteId) {
@@ -53,7 +57,7 @@ export default function EditorControls({
           pathname: pasteId,
         });
         copy(window.location.href);
-        document.title = 'paste | ' + pasteId;
+        document.title = `pasted | ${pasteId} | ${store}`;
       }
     });
   }, [actualContent, language, recentlySaved]);
@@ -109,6 +113,8 @@ export default function EditorControls({
           ids={languages}
         />
         {readOnly && <Button onClick={unsetReadOnly}>[edit]</Button>}
+        {/*<Button onClick={() => store === "public" ? setStore("private") : setStore("public")}>[{store}]</Button>*/}
+        <MenuButton label="store" ids={["private", "public"]} value={store} setValue={setStore}/>
       </Section>
       <Section>
         <Button onClick={() => zoom(1)}>[+ </Button>
@@ -119,6 +125,7 @@ export default function EditorControls({
           setValue={setTheme}
           ids={Object.keys(themes) as (keyof Themes)[]}
         />
+
         <Button
           className="optional"
           as="a"
