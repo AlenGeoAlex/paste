@@ -2,6 +2,8 @@
   <img src=".github/banner.svg">
 </p>
 
+### NOTE : This is a modified version. This features public/private store options, Public will be storing to Lucko's api, while private will be stored to mine.
+
 **paste is a simple web app for writing & sharing code.** It's my own take on conventional pastebin sites like _pastebin.com_ or _hastebin_.
 
 Anyone can use paste! The official/public instance can be accessed using the endpoints listed below, but you can also [host your own](#host-your-own) if you like!
