@@ -21,7 +21,7 @@ export type LoadResult = LoadResultSuccess | LoadResultFail;
 
 export async function loadFromBytebin(id: string, store : 'public' | 'private'): Promise<LoadResult> {
   try {
-    const resp = await fetch(store === 'public' ? bytebinUrl : bytebinPrivateUrl + id);
+    const resp = await fetch(store === 'public' ? bytebinUrl + id : bytebinPrivateUrl + id);
     if (resp.ok) {
       const content = await resp.text();
       const type = contentTypeToLanguage(
