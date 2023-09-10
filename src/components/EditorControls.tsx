@@ -39,10 +39,28 @@ export default function EditorControls({
 }: EditorControlsProps) {
   const [saving, setSaving] = useState<boolean>(false);
   const [recentlySaved, setRecentlySaved] = useState<boolean>(false);
+  const [valid, setValid] = useState<'empty' | 'valid' | 'invalid'>("empty");
 
   useEffect(() => {
     setRecentlySaved(false);
   }, [actualContent, language]);
+
+  useEffect(() => {
+    if(language === 'json'){
+      if(actualContent === null || typeof actualContent === undefined || actualContent.length === 0){
+        setValid('empty');
+        return;
+      }
+      try {
+        const parsed = JSON.parse(actualContent);
+        if(parsed){
+          setValid("valid");
+        }
+      }catch (ignore){
+        setValid("invalid");
+      }
+    }else setValid("empty");
+  }, [actualContent, language])
 
   const save = useCallback(() => {
     if (!actualContent || recentlySaved) {
@@ -88,6 +106,7 @@ export default function EditorControls({
 
     resetFunction.current();
     setLanguage('plain');
+    setStore('public');
     history.replace({
       pathname: '/',
       hash: '',
@@ -113,10 +132,10 @@ export default function EditorControls({
           ids={languages}
         />
         {readOnly && <Button onClick={unsetReadOnly}>[edit]</Button>}
-        {/*<Button onClick={() => store === "public" ? setStore("private") : setStore("public")}>[{store}]</Button>*/}
         <MenuButton label="store" ids={["private", "public"]} value={store} setValue={setStore}/>
       </Section>
       <Section>
+        {language === 'json' && valid !== 'empty' &&  <Button onClick={() => {}}>{valid === 'valid' ? '[JSON valid]' : '[JSON invalid]'}</Button>}
         <Button onClick={() => zoom(1)}>[+ </Button>
         <Button onClick={() => zoom(-1)}> -]</Button>
         <MenuButton

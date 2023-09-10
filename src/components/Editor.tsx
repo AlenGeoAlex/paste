@@ -29,9 +29,7 @@ export default function Editor({
 }: EditorProps) {
   const [language, setLanguage] = useState<string>('plain');
   const [readOnly, setReadOnly] = useState<boolean>(isMobile && !!pasteId);
-  const [store, setStore] = useState<"private" | "public">('public');
   const resetFunction = useRef<ResetFunction>();
-
   const [theme, setTheme] = usePreference<keyof Themes>(
     'theme',
     'dark',
@@ -42,6 +40,11 @@ export default function Editor({
     16,
     pref => pref >= 10 && pref <= 22
   );
+  const [store, setStore] = usePreference<'public' | 'private'>(
+      'store',
+      'public',
+      pref => pref === 'public' || pref === 'private'
+  )
 
   useEffect(() => {
     if (contentType) {
