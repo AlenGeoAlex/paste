@@ -4,7 +4,7 @@ import { MutableRefObject, useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import themes, { Themes } from '../style/themes';
-import { languages } from '../util/highlighting';
+import {expiryDurationNames, languages} from '../util/highlighting';
 import { saveToBytebin } from '../util/storage';
 import Button from './Button';
 import { ResetFunction } from './Editor';
@@ -40,6 +40,7 @@ export default function EditorControls({
   const [saving, setSaving] = useState<boolean>(false);
   const [recentlySaved, setRecentlySaved] = useState<boolean>(false);
   const [valid, setValid] = useState<'empty' | 'valid' | 'invalid'>("empty");
+  const [expiry, setExpiry] = useState<string>('90 days');
 
   useEffect(() => {
     setRecentlySaved(false);
@@ -107,6 +108,7 @@ export default function EditorControls({
     resetFunction.current();
     setLanguage('plain');
     setStore('public');
+    setExpiry('30 days');
     history.replace({
       pathname: '/',
       hash: '',
@@ -133,6 +135,7 @@ export default function EditorControls({
         />
         {readOnly && <Button onClick={unsetReadOnly}>[edit]</Button>}
         <MenuButton label="store" ids={["private", "public"]} value={store} setValue={setStore}/>
+        {store === 'private' && <MenuButton label= 'expiry' ids={expiryDurationNames} value={expiry} setValue={setExpiry}/>}
       </Section>
       <Section>
         {language === 'json' && valid !== 'empty' &&  <Button onClick={() => {}}>{valid === 'valid' ? '[JSON valid]' : '[JSON invalid]'}</Button>}

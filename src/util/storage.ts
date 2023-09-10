@@ -1,7 +1,7 @@
 import { gzip } from 'pako';
 import MIMEType from 'whatwg-mimetype';
 import {bytebinPrivateUrl, bytebinUrl, postUrl, privatePostUrl} from './constants';
-import { languageIds } from './highlighting';
+import {getDurationFor, languageIds} from './highlighting';
 
 interface LoadResultSuccess {
   ok: true;
@@ -51,19 +51,28 @@ export async function load(id : string) : Promise<LoadResult> {
 export async function saveToBytebin(
   code: string,
   language: string,
-  store : "private" | "public"
+  store : "private" | "public",
+  expiry : string | undefined = '30 days'
 ): Promise<string | null> {
   try {
     const compressed = gzip(code);
     const contentType = languageToContentType(language);
+    const headers = {
+      'Content-Type': contentType,
+      'Content-Encoding': 'gzip',
+      'Accept': 'application/json',
+    };
+
+    if(typeof expiry !== undefined && store === 'private'){
+      const additionalHeaders = {
+        'Expiry': getDurationFor(expiry), // Assuming Expiry should be a string
+      };
+      Object.assign(headers, additionalHeaders);
+    }
 
     const resp = await fetch(store === 'public' ? postUrl : privatePostUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': contentType,
-        'Content-Encoding': 'gzip',
-        'Accept': 'application/json',
-      },
+      headers: headers,
       body: compressed,
     });
 
