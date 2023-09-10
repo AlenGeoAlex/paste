@@ -68,7 +68,7 @@ export default function EditorControls({
       return;
     }
     setSaving(true);
-    saveToBytebin(actualContent, language, store).then(pasteId => {
+    saveToBytebin(actualContent, language, store, expiry).then(pasteId => {
       setSaving(false);
       setRecentlySaved(true);
       if (pasteId) {
